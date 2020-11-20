@@ -1,54 +1,50 @@
-# 目的
+# Intro
 
-サーバーサイドエンジニアが気軽に vue.js + spring-boot で SPA 開発するためにはどうしたらいいか、という話。
+Semplice starter per un progetto gradle con vue.js + spring-boot
 
-登場するコンポーネントは以下のものたち。
+I componenti utilizzati sono i seguenti:
 
- * spring-boot(Java の web application framework)
- * webpack(複数の JS をくっつけたりします)
- * npm(js の package manager)
- * babel(ES2015 を昔ながらの JS に変換するのに使います)
- * vue.js(簡単便利な js frameworkで、弊社社内でメインで利用されてるやつ)
+ * spring-boot(Java web application framework)
+ * webpack(Javascript bundler)
+ * npm(Javascript package manager)
+ * babel(Utilizzato per trasformare ES2015 per i vecchi browser)
+ * vue.js(front end framework)
 
-ディレクトリ構造は以下のようにします。
+La struttura delle directory è la seguente:
 
     src/main/java/                        ← java code
     src/main/js/                          ← JS code
-    build/resources/main/static/bundle.js ← 成果物
+    build/resources/main/static/bundle.js ← JS compilato
 
-最終的には  webpack の成果物が含まれる uber jar(fat jar ともいう)が `./gradlew build` で生成されるようにします。
+Quello che si ottiene alla fine è un `fat-jar` (jar con le dipendenze al suo interno) che contiene anche gli artifatti webpack: `./gradlew build`
 
-# セットアップ
+# Configurazione
 
-node.js を最新版にしてください。
+1. Aggiornare node.js all'ultima LTS
+2. Installa webpack globalmente (così da poterlo chiamare direttamente da command-line):
+```shell script
+npm install -g webpack
+```
+3. Installare npm, questo genererà un file di configurazione `package.json` che conterrà anche le varie dipendenze
+```shell script
+npm install -y
+```
+4. Installare le dipendenze per lo sviluppo
+```shell script
+npm install --save-dev webpack babel-core babel-preset-es2015 babel-loader vue-loader vue-style-loader vue-html-loader vue-template-compiler file-loader node-sass sass-loader style-loader url-loader css-loader extract-text-webpack-plugin webpack
+```
+5. Installare vue, vue-router e axios (chiamate http) con il flag `--save`
+```shell script
+npm install --save vue vue-router axios
+```
 
-webpack をインストールします。
+# Configurazione webpack
 
-    npm install -g webpack
+Webpack è un bundler js/css, il suo scopo è quindi quello di creare un pacchetto di assets utilizzabile direttamente nel browser a partire da un insieme di file sorgenti.
 
-まず、npm install で、package.json という npm の設定ファイルを生成します。
+Da webpack si chiamano tutte le pre-elaborazioni necessarie sul js, ad esempio Babel (un framework che transpila le nuove versioni di js per i browser più vecchi) e i loader del caso.
 
-    npm install -y
-
-開発時に必要なライブラリ・アプリケーションをインストールします。
-`--save-dev` オプションは、インストール後に package.json に開発時依存項目として追記するためのオプションです。
-
-    npm install --save-dev webpack babel-core babel-preset-es2015 babel-loader \
-        vue-loader vue-style-loader vue-html-loader vue-template-compiler \
-        file-loader style-loader url-loader css-loader \
-        extract-text-webpack-plugin webpack
-
-vue.js, vue-router という、実行時に利用するライブラリをインストールします。
-`--save` オプションは、インストール後に package.json に依存項目として追記するためのオプションです。
-
-    npm install --save vue bootstrap vue-router axios
-
-# webpack の設定
-
-webpack は JS/CSS 等の静的コンテンツを依存も含めて1つのファイルにまとめてくれるアプリケーションです。
-babel 等の前処理も webpack で呼び出します(babel は transpiler framework で、主に ES2015 を古いブラウザでも実行できるようにするために利用されています)。
-
-ExtractTextPlugin は、CSS ファイルを別ファイルとして書き出すために利用しています。
+ExtractTextPlugin viene utilizzato per esportare i file css come file separati.
 
 ```javascript
 const webpack = require("webpack");
@@ -78,7 +74,6 @@ module.exports = {
           use: "css-loader"
         })
       },
-      // bootstrap に含まれる font 等を data url に変換する。
       {test: /\.svg$/, loader: 'url-loader?mimetype=image/svg+xml'},
       {test: /\.woff$/, loader: 'url-loader?mimetype=application/font-woff'},
       {test: /\.woff2$/, loader: 'url-loader?mimetype=application/font-woff'},
@@ -93,13 +88,13 @@ module.exports = {
 ;
 ```
 
-webpack は `webpack` コマンドを実行するだけで利用できます。
-開発時には `webpack -w` とすると、プロセスが常駐し、ファイルの更新を監視して、更新があったらリビルドされるようになります。
+Webpack è disponibile utilizzando il commando `webpack`
 
-# gradle とのつなぎ込み
+In fase di sviluppo utilizzando il comando `webpack -w`, questo monitorerà gli aggiornamenti ai file e ripubblicherà il front-end.
 
-webpack を実行する gradle task を設定します。
-`./gradlew build` した時に、uber jar の中に webpack の成果物を埋めるような設定を行います。
+# Configurazione gradle
+
+Gradle va configurato in modo tale da eseguire anche webpack quando si lancia `./gradlew build`
 
 ```groovy
 buildscript {
@@ -136,12 +131,11 @@ clean.delete << file('node_modules')
 
 ```
 
-`./gradlew build` すると webpack が実行され、jar の中にビルド済みの js が梱包されます。
+`./gradlew build` in questo modo eseguirà webpack e mettere il js compilato all'interno del jar.
 
-# `npm run dev` コマンドの設定
+# `npm run dev` per lo sviluppo locale
 
-`webpack -w` を IntelliJ IDEA から呼び出しやすいように npm のサブコマンドを定義しておきます。
-package.json に以下のように記述します。
+All'interno del file package json è stato definito come script `dev` il `webpack -w`
 
 ```
 {
@@ -155,9 +149,10 @@ package.json に以下のように記述します。
 }
 ```
 
-こうすることにより、`npm run dev` で `webpack -w` を実行できます。
+In questo modo si potrà lanciare facilmente da intellij `npm run serve` e partirà il server in modalità development.
 
 # SEE ALSO
+Credits to  https://github.com/tokuhirom/spring-vue-samp
 
  * http://shigekitakeguchi.github.io/2016/08/10/1.html
  * https://webpack.js.org/plugins/extract-text-webpack-plugin/#usage-example-with-css
