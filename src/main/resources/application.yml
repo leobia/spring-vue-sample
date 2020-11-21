@@ -1,8 +1,0 @@
-# Spring security enables Basic auth by default.
-# But in most cases, it's not needed. We should disable this.
-security:
-  basic:
-    enabled: false
-
-# When you can't serve generated resources from tomcat, you can enable following log for debugging.
-# logging.level.org.springframework.web.servlet.resource: trace

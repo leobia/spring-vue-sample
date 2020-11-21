@@ -7,3 +7,13 @@
   color: green
 }
 </style>
+
+<script>
+export default {
+  mounted() {
+    this.$http('/test').then(response => {
+      console.log(response)
+    })
+  }
+};
+</script>

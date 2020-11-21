@@ -6,10 +6,10 @@ import axios from "axios";
 import "./style/style.sass"
 
 Vue.use(VueRouter);
+Vue.prototype.$http = axios;
 
-axios.interceptors.response.use(null, function(error) {
-    console.log(error);
-    window.alert(error.config.url + ": " + error + "\n\n" + JSON.stringify(error.response.data));
+Vue.prototype.$http.interceptors.response.use(null, function(error) {
+    console.error(error);
     return Promise.reject(error);
 });
 

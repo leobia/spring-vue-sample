@@ -1,18 +1,16 @@
 <template>
-    <div class="row">
-        <div class="col-md-4">
+    <div>
+        <div>
             Menu
             <router-link to="/">Home</router-link>
-            <router-link to="/product/">Products</router-link>
         </div>
-        <div class="col-md-6">
+        <div>
             <router-view></router-view>
         </div>
     </div>
 </template>
 
 <script>
-    import "bootstrap/dist/css/bootstrap.min.css";
 
     export default {
     };
