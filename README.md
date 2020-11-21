@@ -45,6 +45,14 @@ npm install --save vue vue-router axios
 ```
 7. Rilanciare `npm install`
 
+# Configurazione eslint + prettier
+
+I file .eslintrc.js e .eslintrc.json sono i file dedicati alla formattazione e controllo codice js/vue. Per utilizzarlo
+```
+npm install --global prettier
+```
+Se si usa visual studio code seguire https://www.digitalocean.com/community/tutorials/vuejs-vue-eslint-plugin
+
 # Configurazione webpack
 
 Webpack è un bundler js/css, il suo scopo è quindi quello di creare un pacchetto di assets utilizzabile direttamente nel browser a partire da un insieme di file sorgenti.

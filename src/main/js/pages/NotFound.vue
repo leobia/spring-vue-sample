@@ -1,3 +1,3 @@
 <template>
-    <div>Page not found: {{$route.path}}</div>
+  <div>Page not found: {{ $route.path }}</div>
 </template>
