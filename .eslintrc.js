@@ -8,5 +8,9 @@ module.exports = {
   ],
   env: {
     node: true
+  },
+  globals: {
+    window: true,
+    module: true
   }
 };
