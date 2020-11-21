@@ -8,13 +8,19 @@ import "./style/style.sass";
 Vue.use(VueRouter);
 Vue.prototype.$http = axios;
 
+Vue.prototype.$http.interceptors.request.use(function(config) {
+  if (!config.url.startsWith("/report")) {
+    config.url = "/report" + config.url;
+  }
+  return config;
+});
+
 Vue.prototype.$http.interceptors.response.use(null, function(error) {
   console.error(error);
   return Promise.reject(error);
 });
 
 const router = new VueRouter({
-  // eslint-disable-next-line no-undef
   base: __dirname,
   routes: routes
 });
