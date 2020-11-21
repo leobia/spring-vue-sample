@@ -27,15 +27,17 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /\.css$/i,
-                use: [{
-                    loader: MiniCssExtractPlugin.loader,
-                    options: {
-                        publicPath: __dirname + "/build/resources/main/static/css/"
-                    }
-                }, 'css-loader'],
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: __dirname + "/build/resources/main/static/css/"
+                        }
+                    }, 'css-loader', 'sass-loader'],
+                    // "css-loader", Translates CSS into CommonJS
+                    // "sass-loader", Compiles Sass to CSS
             },
-            // bootstrap に含まれる font 等を data url に変換する。
             {test: /\.svg$/, use: [ {loader: 'url-loader', options: { mimetype: 'image/svg+xml' }} ]},
             {test: /\.woff$/, use: [ {loader: 'url-loader', options: { mimetype: 'application/font-woff' }} ]},
             {test: /\.woff2$/, use: [ {loader: 'url-loader', options: { mimetype: 'application/font-woff' }} ]},

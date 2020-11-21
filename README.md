@@ -38,13 +38,20 @@ npm install --save-dev webpack babel-core babel-preset-es2015 babel-loader vue-l
 npm install --save vue vue-router axios
 ```
 
+6. Per un bug di babel andare nel `package.json` ed aumentare la versione in questo modo:
+```
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+```
+7. Rilanciare `npm install`
+
 # Configurazione webpack
 
 Webpack è un bundler js/css, il suo scopo è quindi quello di creare un pacchetto di assets utilizzabile direttamente nel browser a partire da un insieme di file sorgenti.
 
 Da webpack si chiamano tutte le pre-elaborazioni necessarie sul js, ad esempio Babel (un framework che transpila le nuove versioni di js per i browser più vecchi) e i loader del caso.
 
-ExtractTextPlugin viene utilizzato per esportare i file css come file separati.
+MiniCssExtractPlugin viene utilizzato per esportare i file css come file separati.
 
 ```javascript
 const webpack = require("webpack");
@@ -57,32 +64,57 @@ module.exports = {
     path: __dirname + '/build/resources/main/static'
   },
   module: {
-    loaders: [
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader'
-      },
-      {
-        test: /\.js$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader"
-        })
-      },
-      {test: /\.svg$/, loader: 'url-loader?mimetype=image/svg+xml'},
-      {test: /\.woff$/, loader: 'url-loader?mimetype=application/font-woff'},
-      {test: /\.woff2$/, loader: 'url-loader?mimetype=application/font-woff'},
-      {test: /\.eot$/, loader: 'url-loader?mimetype=application/font-woff'},
-      {test: /\.ttf$/, loader: 'url-loader?mimetype=application/font-woff'}
-    ]
+      rules: [
+          {
+              test: /\.vue$/,
+              loader: 'vue-loader'
+          },
+          {
+              test: /\.js$/,
+              use: {
+                  loader: 'babel-loader',
+                  options: {
+                      presets: ['@babel/preset-env']
+                  }
+              },
+              exclude: /node_modules/
+          },
+          {
+              test: /\.css$/i,
+              use: [{
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                      publicPath: __dirname + "/build/resources/main/static/css/"
+                  }
+              }, 'css-loader'],
+          },
+          {test: /\.svg$/, use: [ {loader: 'url-loader', options: { mimetype: 'image/svg+xml' }} ]},
+          {test: /\.woff$/, use: [ {loader: 'url-loader', options: { mimetype: 'application/font-woff' }} ]},
+          {test: /\.woff2$/, use: [ {loader: 'url-loader', options: { mimetype: 'application/font-woff' }} ]},
+          {test: /\.eot$/, use: [ {loader: 'url-loader', options: { mimetype: 'application/font-woff' }} ]},
+          {test: /\.ttf$/, use: [ {loader: 'url-loader', options: { mimetype: 'application/font-woff' }} ]}
+      ]
   },
   plugins: [
-    new ExtractTextPlugin("styles.css"),
+      new VueLoaderPlugin(),
+      new MiniCssExtractPlugin({
+          filename: "/css/main.css"
+      }),
+      // IntelliJ IDEA uses out/production/resources/ as a classpath.
+      new FileManagerPlugin({
+          onEnd: {
+              copy: [
+                  {
+                      source: __dirname + '/build/resources/main/static/js/bundle.js',
+                      destination: __dirname + '/out/production/resources/static/js/bundle.js'
+                  },
+                  {
+                      source: __dirname + '/build/resources/main/static/css/main.css',
+                      destination: __dirname + '/out/production/resources/static/css/main.css'
+                  }
+              ]
+          }
+      })
   ]
 }
 ;
@@ -145,11 +177,11 @@ All'interno del file package json è stato definito come script `dev` il `webpac
   "main": "index.js",
   "scripts": {
     "dev": "webpack -w"
-  }, // 以下略
+  },
 }
 ```
 
-In questo modo si potrà lanciare facilmente da intellij `npm run serve` e partirà il server in modalità development.
+In questo modo si potrà lanciare facilmente da intellij `npm run dev` e webpack comincerà a fare uno "watch" (-w) e refreshando la pagina si vedranno le modifiche.
 
 # SEE ALSO
 Credits to  https://github.com/tokuhirom/spring-vue-samp

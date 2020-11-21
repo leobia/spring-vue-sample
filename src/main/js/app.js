@@ -3,6 +3,7 @@ import App from './components/App.vue';
 import VueRouter from 'vue-router';
 import routes from './routes.js';
 import axios from "axios";
+import "./style/style.sass"
 
 Vue.use(VueRouter);
 
