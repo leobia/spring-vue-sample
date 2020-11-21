@@ -5,5 +5,8 @@ module.exports = {
     "plugin:vue/essential",
     "plugin:prettier/recommended",
     "eslint:recommended"
-  ]
+  ],
+  env: {
+    node: true
+  }
 };
